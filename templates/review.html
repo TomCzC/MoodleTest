@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revize testu</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .review-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 25px;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-radius: 4px;
+        }
+        .review-header {
+            color: #1a5a96;
+            border-bottom: 1px solid #e1e1e1;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        .question-review {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e1e1e1;
+            border-radius: 4px;
+            background-color: #f8f9fa;
+        }
+        .question-text {
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .answer-section {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .user-answer {
+            font-weight: bold;
+        }
+        .correct {
+            color: #155724;
+            background-color: #d4edda;
+        }
+        .incorrect {
+            color: #721c24;
+            background-color: #f8d7da;
+        }
+        .correct-answer {
+            color: #155724;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .question-image {
+            max-width: 100%;
+            margin: 15px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .btn-home {
+            display: block;
+            width: 200px;
+            margin: 30px auto 0;
+            padding: 12px;
+            background-color: #1a5a96;
+            color: white;
+            text-align: center;
+            border-radius: 4px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+        .btn-home:hover {
+            background-color: #134980;
+        }
+    </style>
+</head>
+<body>
+    <div class="review-container">
+        <div class="review-header">
+            <h1>Revize testu</h1>
+            <p>Správně {{ score }} z {{ total }} otázek ({{ "%.0f"|format((score/total)*100) }}%)</p>
+            <p>Čas: {{ time_spent }}</p>
+        </div>
+        
+        {% for item in questions %}
+        <div class="question-review">
+            <div class="question-text">Otázka {{ loop.index }}: {{ item.question.text }}</div>
+            
+            {% if item.question.image %}
+            <img src="{{ url_for('static', filename=item.question.image) }}" class="question-image" alt="Obrázek k otázce">
+            {% endif %}
+            
+            <div class="answer-section user-answer {% if item.is_correct %}correct{% else %}incorrect{% endif %}">
+                <strong>Vaše odpověď:</strong> {{ item.user_answer }}
+            </div>
+            
+            {% if not item.is_correct %}
+            <div class="correct-answer">
+                <strong>Správná odpověď:</strong> {{ item.question.correct_answer }}
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+        
+        <a href="/" class="btn-home">Hlavní menu</a>
+    </div>
+</body>
+</html>

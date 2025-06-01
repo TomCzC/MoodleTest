@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Výsledky testu</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .result-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 25px;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-radius: 4px;
+        }
+        .result-header {
+            color: #1a5a96;
+            border-bottom: 1px solid #e1e1e1;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        .percentage {
+            font-size: 48px;
+            color: #1a5a96;
+            text-align: center;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        .result-score {
+            font-size: 24px;
+            text-align: center;
+            margin: 15px 0;
+        }
+        .result-details {
+            margin: 25px 0;
+        }
+        .detail-row {
+            display: flex;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .detail-label {
+            flex: 1;
+            font-weight: bold;
+            color: #6c757d;
+        }
+        .detail-value {
+            flex: 2;
+        }
+        .btn {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 12px;
+            text-align: center;
+            border-radius: 4px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+        .btn-review {
+            background-color: #17a2b8;
+            color: white;
+        }
+        .btn-review:hover {
+            background-color: #138496;
+        }
+        .btn-home {
+            background-color: #1a5a96;
+            color: white;
+        }
+        .btn-home:hover {
+            background-color: #134980;
+        }
+    </style>
+</head>
+<body>
+    <div class="result-container">
+        <div class="result-header">
+            <h1>Výsledky testu</h1>
+        </div>
+        
+        <div class="percentage">{{ "%.0f"|format((score/total)*100) }}%</div>
+        
+        <div class="result-score">Správně {{ score }} z {{ total }} otázek</div>
+        
+        <div class="result-details">
+            <div class="detail-row">
+                <div class="detail-label">Čas strávený:</div>
+                <div class="detail-value">{{ time_spent }}</div>
+            </div>
+        </div>
+        
+        <a href="/review" class="btn btn-review">Zobrazit revizi testu</a>
+        <a href="/" class="btn btn-home">Hlavní menu</a>
+    </div>
+</body>
+</html>

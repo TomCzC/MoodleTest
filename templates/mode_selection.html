@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Výběr režimu testu</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .header {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .mode-container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 800px;
+        }
+        .mode-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            padding: 25px;
+            width: 300px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .mode-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        .mode-card h2 {
+            color: #1a5a96;
+            margin-top: 0;
+        }
+        .mode-card p {
+            color: #6c757d;
+            margin-bottom: 20px;
+        }
+        .btn {
+            background-color: #1a5a96;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Výběr režimu testu</h1>
+        <p>Vyberte si preferovaný režim pro absolvování testu</p>
+    </div>
+
+    <div class="mode-container">
+        <div class="mode-card" onclick="window.location.href='/start/drill'">
+            <h2>Drill Režim</h2>
+            <p>Okamžitá zpětná vazba po každé odpovědi. Musíte správně odpovědět, abyste mohli pokračovat.</p>
+            <span class="btn">Spustit Drill</span>
+        </div>
+
+        <div class="mode-card" onclick="window.location.href='/start/test'">
+            <h2>Test Režim</h2>
+            <p>8 náhodných otázek s časovým limitem 15 minut. Po dokončení můžete projít všechny odpovědi.</p>
+            <span class="btn">Spustit Test</span>
+        </div>
+    </div>
+</body>
+</html>

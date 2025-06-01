@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ 'Drill' if mode == 'drill' else 'Test' }} - Otázka {{ qid + 1 }}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-radius: 4px;
+        }
+        .header {
+            border-bottom: 1px solid #e1e1e1;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            color: #1a5a96;
+            font-size: 24px;
+            margin: 0;
+        }
+        .progress-info {
+            color: #6c757d;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        .question-text {
+            font-size: 18px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        .question-image {
+            max-width: 100%;
+            margin: 15px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .answer-options {
+            margin: 25px 0;
+        }
+        .option {
+            margin: 8px 0;
+            padding: 12px;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            transition: background-color 0.2s;
+        }
+        .option:hover {
+            background-color: #e9ecef;
+        }
+        .option input[type="radio"],
+        .option input[type="checkbox"] {
+            margin-right: 15px;
+            transform: scale(1.3);
+            cursor: pointer;
+        }
+        .option label {
+            flex-grow: 1;
+            cursor: pointer;
+        }
+        .text-answer {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .feedback {
+            padding: 12px 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .correct-feedback {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .incorrect-feedback {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .correct-answer {
+            font-weight: bold;
+            color: #155724;
+            margin-top: 10px;
+        }
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid #e1e1e1;
+        }
+        .btn {
+            padding: 10px 16px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.2s;
+        }
+        .btn-primary {
+            background-color: #1a5a96;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #134980;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        #timer-container {
+            text-align: right;
+            margin: 10px 0;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        #timer.warning {
+            color: #ffc107;
+        }
+        #timer.danger {
+            color: #dc3545;
+        }
+        .answered-correct {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .answered-incorrect {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% if mode == 'test' %}
+        <div id="timer-container">
+            Zbývající čas: <span id="timer">{{ time_left//60 }}:{{ '%02d' % (time_left%60) }}</span>
+        </div>
+        {% endif %}
+
+        <div class="header">
+            <h1>{{ 'Drill' if mode == 'drill' else 'Test' }}</h1>
+            <div class="progress-info">Otázka {{ qid + 1 }} z {{ total }}</div>
+        </div>
+        
+        <div class="question-text">{{ question.text }}</div>
+        
+        {% if question.image %}
+        <img src="{{ url_for('static', filename=question.image) }}" class="question-image" alt="Obrázek k otázce">
+        {% endif %}
+        
+        {% if error %}
+        <div class="feedback incorrect-feedback">{{ error }}</div>
+        {% endif %}
+        
+        {% if show_feedback %}
+        <div class="feedback {{ 'correct-feedback' if is_correct else 'incorrect-feedback' }}">
+            {% if is_correct %}
+            ✔ Správně!
+            {% else %}
+            ✗ Špatná odpověď
+            {% endif %}
+        </div>
+        <div class="correct-answer">Správná odpověď: 
+            {% if question.multi_correct %}
+                {{ question.correct_answer|join(', ') }}
+            {% else %}
+                {{ question.correct_answer }}
+            {% endif %}
+        </div>
+        {% endif %}
+        
+        <form method="POST" action="/check" id="test-form">
+            <div class="answer-options">
+                {% if question.type == 'multiple_choice' %}
+                    {% if question.multi_correct %}
+                        {% for option in question.options %}
+                        <div class="option {% if show_feedback %} 
+                            {% if option in question.correct_answer %}answered-correct
+                            {% elif option in user_answer.split(';') and not is_correct %}answered-incorrect
+                            {% endif %}{% endif %}">
+                            <input type="checkbox" name="answer" value="{{ option }}" id="opt{{ loop.index }}"
+                                {% if option in user_answer.split(';') %}checked{% endif %}>
+                            <label for="opt{{ loop.index }}">{{ option }}</label>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        {% for option in question.options %}
+                        <div class="option {% if show_feedback %} 
+                            {% if option == question.correct_answer %}answered-correct
+                            {% elif option == user_answer and not is_correct %}answered-incorrect
+                            {% endif %}{% endif %}">
+                            <input type="radio" name="answer" value="{{ option }}" id="opt{{ loop.index }}"
+                                {% if option == user_answer %}checked{% endif %}>
+                            <label for="opt{{ loop.index }}">{{ option }}</label>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                {% else %}
+                    <input type="text" name="answer" class="text-answer {% if show_feedback and not is_correct %}answered-incorrect{% endif %}" 
+                           value="{{ user_answer }}" required>
+                {% endif %}
+            </div>
+            
+            <div class="navigation">
+                {% if qid > 0 %}
+                <button type="button" class="btn btn-primary" onclick="window.location.href='/question/{{ qid - 1 }}'">
+                    ← Předchozí
+                </button>
+                {% else %}
+                <div></div>
+                {% endif %}
+                
+                <div>
+                    {% if mode == 'test' %}
+                    <button type="button" class="btn btn-secondary" onclick="window.location.href='/question/{{ (qid + 1) % total }}'">
+                        Přeskočit →
+                    </button>
+                    {% endif %}
+                    <button type="button" class="btn btn-danger" onclick="window.location.href='/end_session'">
+                        Ukončit {{ 'drill' if mode == 'drill' else 'test' }}
+                    </button>
+                    <button type="submit" class="btn btn-success">Odeslat</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    {% if mode == 'test' %}
+    <script>
+        let timeLeft = {{ time_left }};
+        const timerElement = document.getElementById('timer');
+        
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (timeLeft <= 60) {
+                timerElement.className = 'danger';
+                if (timeLeft === 60) {
+                    alert('Pozor! Zbývá poslední minuta!');
+                }
+            } else if (timeLeft <= 300) {
+                timerElement.className = 'warning';
+            }
+            
+            if (timeLeft <= 0) {
+                document.getElementById('test-form').submit();
+            } else {
+                timeLeft--;
+                setTimeout(updateTimer, 1000);
+            }
+        }
+        
+        updateTimer();
+    </script>
+    {% endif %}
+
+    <script>
+        // Pro otázky s více správnými odpověďmi
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = 'answer';
+                hiddenInput.value = Array.from(checkboxes).map(cb => cb.value).join(';');
+                
+                // Odstranění předchozího hidden inputu
+                const oldHidden = document.querySelector('input[type="hidden"][name="answer"]');
+                if (oldHidden) oldHidden.remove();
+                
+                // Přidání nového hidden inputu
+                this.closest('form').appendChild(hiddenInput);
+            });
+        });
+    </script>
+</body>
+</html>
